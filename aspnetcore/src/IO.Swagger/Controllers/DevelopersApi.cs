@@ -36,6 +36,7 @@ namespace IO.Swagger.Controllers
         /// <param name="limit">maximum number of records to return</param>
         /// <param name="startDate">DateTime (UTC) starting (inclusive) for search</param>
         /// <param name="endDate">DateTime (UTC) ending (exclusive) for search</param>
+        /// <param name="sensor"></param>
         /// <response code="200">search results matching criteria</response>
         /// <response code="400">bad input parameter</response>
         [HttpGet]
@@ -43,7 +44,7 @@ namespace IO.Swagger.Controllers
         [ValidateModelState]
         [SwaggerOperation("SearchTemperatures")]
         [SwaggerResponse(statusCode: 200, type: typeof(List<TemperatureReading>), description: "search results matching criteria")]
-        public virtual IActionResult SearchTemperatures([FromQuery]string searchString, [FromQuery]int? skip, [FromQuery][Range(0, 50)]int? limit, [FromQuery]DateTime? startDate, [FromQuery]DateTime? endDate)
+        public virtual IActionResult SearchTemperatures([FromQuery]string searchString, [FromQuery]int? skip, [FromQuery][Range(0, 50)]int? limit, [FromQuery]DateTime? startDate, [FromQuery]DateTime? endDate, [FromHeader]TemperatureSensor sensor)
         { 
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200, default(List<TemperatureReading>));

@@ -87,6 +87,15 @@
             "type" : "string",
             "format" : "date-time"
           }
+        }, {
+          "name" : "sensor",
+          "in" : "header",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "$ref" : "#/components/schemas/TemperatureSensor"
+          }
         } ],
         "responses" : {
           "200" : {
