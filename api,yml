@@ -1,0 +1,148 @@
+openapi: 3.0.0
+servers:
+  - description: Temperature Reading API
+    url: https://virtserver.swaggerhub.com/Solenoid/Temperature/1.0.0
+info:
+  description: This API is meant as an exchange mechanism for temperature readings
+  version: "1.0.0"
+  title: Simple Temperature API
+  contact:
+    email: stephen@solenoidsoft.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: admins
+    description: Secured Admin-only calls
+  - name: developers
+    description: Operations available to regular developers
+paths:
+  /temperature:
+    get:
+      tags:
+        - developers
+      summary: searches readings
+      operationId: searchTemperatures
+      description: |
+        By passing in the appropriate options, you can search for
+        temperature readings in the system
+      parameters:
+        - in: query
+          name: searchString
+          description: pass an optional search string for looking up readings
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: skip
+          description: number of records to skip for pagination
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: limit
+          description: maximum number of records to return
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 50
+        - in: query
+          name: startDate
+          description: DateTime (UTC) starting (inclusive) for search
+          schema:
+            type: string
+            format: date-time
+          required: false
+        - in: query
+          name: endDate
+          description: DateTime (UTC) ending (exclusive) for search
+          schema:
+            type: string
+            format: date-time
+          required: false
+        - in: header
+          name: sensor
+          required: false
+          schema:
+            $ref: '#/components/schemas/TemperatureSensor'
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TemperatureReading'
+        '400':
+          description: bad input parameter
+    post:
+      tags:
+        - admins
+      summary: adds a temperature sensor reading
+      operationId: addReading
+      description: Adds a reading
+      responses:
+        '201':
+          description: item created
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: an existing item already exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemperatureReading'
+        description: Inventory item to add
+components:
+  schemas:
+    TemperatureReading:
+      type: object
+      required:
+        - id
+        - sensor
+        - dateTime
+        - value
+        - unitOfMeasure
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        sensor:
+          $ref: '#/components/schemas/TemperatureSensor'
+        dateTime:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        value:
+          type: number
+          format: float
+          example: 32.00
+        unitOfMeasure:
+          type: string
+          enum: [C, F, K, R, D, N, E, O]
+          description: >
+            C - Celcius
+            F - Fahrenheit
+            K - Kelvin
+            R - Rankine
+            D - Delisle
+            N - Newton
+            E - Réaumur
+            O - Rømer
+    TemperatureSensor:
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for a specific sensor
+        name:
+          type: string
+          example: User-friendly name for a sensor
